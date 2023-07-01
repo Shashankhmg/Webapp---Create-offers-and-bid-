@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            var form = document.getElementById("login"); // Update the form ID here
+            var formData = new FormData(form);
+
+            // Make an AJAX request to submit the form data
+            var request = new XMLHttpRequest();
+            request.open("POST", "http://localhost:5000/login");
+            request.onreadystatechange = function () {
+                if (request.readyState === XMLHttpRequest.DONE) {
+                    if (request.status === 200) {
+                        var response = JSON.parse(request.responseText);
+                        localStorage.setItem('role', response.role);
+                        localStorage.setItem('userid', response.userid);
+                        redirectToPage(response.role);
+                    } else {
+                        console.log('Login request failed');
+                    }
+                }
+            };
+            request.send(formData);
+        }
+
+        function redirectToPage() {
+            var role = localStorage.getItem('role');
+            if (role === 'customer') {
+                window.location.href = "http://localhost:5000/createoffers";
+            } else {
+                window.location.href = "http://localhost:5000/closeoffers";
+            }
+        }
+
+    </script>
+</head>
+<body>
+    <h2>Login</h2>
+    <form id="login" method="POST" onsubmit="return validatePassword();">
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <input type="submit" value="Login" onclick="handleSubmit(event);">
+    </form>
+</body>
+</html>

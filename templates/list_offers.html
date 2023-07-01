@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Offers</title>
+    <style>
+        .offer-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            fetch('http://localhost:5000/listoffers', {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    displayOffers(data);
+                })
+                .catch(error => {
+                    console.log('Error:', error);
+                });
+        });
+
+        function displayOffers(offers) {
+            var offersContainer = document.getElementById('offers-container');
+            offersContainer.innerHTML = '';
+
+            offers.forEach(function (offer) {
+                var offerBox = document.createElement('div');
+                offerBox.classList.add('offer-box');
+
+                var title = document.createElement('h3');
+                title.textContent = offer.title;
+
+                var description = document.createElement('p');
+                description.textContent = 'Description: ' + offer.description;
+
+                var price = document.createElement('p');
+                price.textContent = 'Price: ' + offer.price;
+
+                var userId = document.createElement('p');
+                userId.textContent = 'User ID: ' + offer.user_id;
+
+                var createBidButton = document.createElement('button');
+                createBidButton.textContent = 'Create Bid';
+                createBidButton.addEventListener('click', function() {
+                    var offerId = offer.offer_id; // Retrieve the offer_id from the offer object
+                    localStorage.setItem('selectedOfferId', offerId);
+                    window.location.href = 'http://localhost:5000/createbid';
+                });
+
+                offerBox.appendChild(title);
+                offerBox.appendChild(description);
+                offerBox.appendChild(price);
+                offerBox.appendChild(userId);
+                offerBox.appendChild(createBidButton);
+
+                offersContainer.appendChild(offerBox);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>Offers</h2>
+    <div id="offers-container"></div>
+</body>
+</html>

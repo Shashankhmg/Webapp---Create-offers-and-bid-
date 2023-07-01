@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bid Form</title>
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            var form = document.getElementById("createbid");
+            var formData = new FormData(form);
+
+            var offerid = localStorage.getItem('selectedOfferId'); // Updated key to 'selectedOfferId'
+            formData.append('offer_id', offerid); // Updated field name to 'offer_id'
+
+            console.log('OFFERID:', offerid);
+
+            // Log the form data
+            console.log('Form Data:', Object.fromEntries(formData));
+
+            // Make an AJAX request to submit the form data
+            var request = new XMLHttpRequest();
+            request.open("POST", "http://localhost:5000/createbid");
+            request.onreadystatechange = function () {
+                if (request.readyState === XMLHttpRequest.DONE) {
+                    if (request.status === 200) {
+                        alert('Bid created successfully');
+                        form.reset();
+                    } else {
+                        alert('Failed to create bid');
+                    }
+                }
+            };
+            request.send(formData);
+        }
+    </script>
+</head>
+<body>
+    <h1>Bid Form</h1>
+    <form id="createbid">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+        
+        <label for="bidpassword">Bid Password:</label>
+        <input type="password" id="bidpassword" name="bidpassword" required><br><br>
+        
+        <label for="amount">Amount in Euro:</label>
+        <input type="number" id="amount" name="amount" required><br><br>
+        
+        <input type="submit" value="Submit" onclick="handleSubmit(event)">
+    </form>
+</body>
+</html>

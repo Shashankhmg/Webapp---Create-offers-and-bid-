@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Offers</title>
+    <style>
+        .offer-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            // Retrieve userId from local storage
+            var offer_id = localStorage.getItem('selectedOfferId');
+            console.log('offer_id:', offer_id);
+
+            var formData = new FormData();
+            formData.append('offer_id', offer_id);
+
+            fetch('http://localhost:5000/bidforoffer', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    displayOffers(data);
+                })
+                .catch(error => {
+                    console.log('Error:', error);
+                });
+        });
+
+        function displayOffers(offers) {
+            var offersContainer = document.getElementById('offers-container');
+            offersContainer.innerHTML = '';
+
+
+            offers.sort(function (a, b) {
+                return b.price - a.price;
+            });
+
+
+            offers.forEach(function (offer) {
+                var offerBox = document.createElement('div');
+                offerBox.classList.add('offer-box');
+
+                var bidName = document.createElement('p');
+                bidName.textContent = 'Bid Name: ' + offer.name;
+
+                var bidAmount = document.createElement('p');
+                bidAmount.textContent = 'Bid Amount: ' + offer.price;
+
+                var createBidButton = document.createElement('button');
+                createBidButton.textContent = 'finalizebid';
+                createBidButton.addEventListener('click', function() {
+                    var offerId = offer.offer_id; // Retrieve the offer_id from the offer object
+                    localStorage.setItem('selectedOfferId', offerId);
+                    window.location.href = 'http://localhost:5000/finalizebid';
+                });
+
+                offerBox.appendChild(bidName);
+                offerBox.appendChild(bidAmount);
+                offerBox.appendChild(createBidButton);
+
+                offersContainer.appendChild(offerBox);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h2>Bid's</h2>
+    <div id="offers-container"></div>
+</body>
+</html>

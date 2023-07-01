@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Offers</title>
+    <style>
+        .offer-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            // Retrieve userId from local storage
+            var userId = localStorage.getItem('userid');
+            console.log('userId:', userId);
+
+            var formData = new FormData();
+            formData.append('userId', userId);
+
+            fetch('http://localhost:5000/myoffers', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    displayOffers(data);
+                })
+                .catch(error => {
+                    console.log('Error:', error);
+                });
+        });
+
+        function displayOffers(offers) {
+            var offersContainer = document.getElementById('offers-container');
+            offersContainer.innerHTML = '';
+
+            offers.forEach(function (offer) {
+                var offerBox = document.createElement('div');
+                offerBox.classList.add('offer-box');
+
+                var title = document.createElement('h3');
+                title.textContent = offer.title;
+
+                var description = document.createElement('p');
+                description.textContent = 'Description: ' + offer.description;
+
+                var price = document.createElement('p');
+                price.textContent = 'Price: ' + offer.price;
+
+                var userId = document.createElement('p');
+                userId.textContent = 'User ID: ' + offer.user_id;
+
+                var createBidButton = document.createElement('button');
+                createBidButton.textContent = 'See all Bid';
+                createBidButton.addEventListener('click', function() {
+                    var offerId = offer.offer_id; // Retrieve the offer_id from the offer object
+                    localStorage.setItem('selectedOfferId', offerId);
+                    window.location.href = 'http://localhost:5000/bidforoffer';
+                });
+
+                var createCloseOfferButton = document.createElement('button');
+                createCloseOfferButton.textContent = 'Delete offer';
+                createCloseOfferButton.addEventListener('click', function() {
+                    var offerId = offer.offer_id; // Retrieve the offer_id from the offer object
+                    localStorage.setItem('selectedOfferId', offerId);
+                    var userId = localStorage.getItem('userid');
+                    deleteOffer(offerId);
+                });
+
+                offerBox.appendChild(title);
+                offerBox.appendChild(description);
+                offerBox.appendChild(price);
+                offerBox.appendChild(userId);
+                offerBox.appendChild(createBidButton);
+                offerBox.appendChild(createCloseOfferButton);
+
+                offersContainer.appendChild(offerBox);
+            });
+        }
+        
+        function deleteOffer(offerId) {
+            var formData = new FormData();
+            formData.append('offer_id', offerId);
+            var userId = localStorage.getItem('userid');
+            formData.append('user_id', userId);
+
+            fetch('http://localhost:5000/closeoffers', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Redirect to a different page or perform any other action as needed
+                    window.location.href = 'http://localhost:5000/closeoffers';
+                    alert('Offer and respective bid deleted');
+                })
+                .catch(error => {
+                    console.log('Error:', error);
+                });
+        }
+    </script>
+</head>
+<body>
+    <h2>Offers</h2>
+    <div id="offers-container"></div>
+</body>
+</html>

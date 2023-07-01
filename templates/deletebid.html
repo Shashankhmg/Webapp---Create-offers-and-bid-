@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Bid</title>
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            var form = document.getElementById("deletebid");
+            var formData = new FormData(form);
+
+            // Log the form data
+            console.log('Form Data:', Object.fromEntries(formData));
+
+            // Make an AJAX request to submit the form data
+            var request = new XMLHttpRequest();
+            request.open("POST", "http://localhost:5000/deletebid");
+            request.onreadystatechange = function () {
+                if (request.readyState === XMLHttpRequest.DONE) {
+                    if (request.status === 200) {
+                        alert('Bid deleted successfully');
+                        form.reset();
+                    } else {
+                        alert('Failed to delete bid');
+                    }
+                }
+            };
+            request.send(formData);
+        }
+    </script>
+</head>
+<body>
+    <h2>Delete Bid</h2>
+    <form id="deletebid" method="POST" onsubmit="handleSubmit(event);">
+        <label for="bid_name">Bid Name:</label>
+        <input type="text" id="bid_name" name="bid_name" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <input type="submit" value="Delete Bid">
+    </form>
+</body>
+</html>
